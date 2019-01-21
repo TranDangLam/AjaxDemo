@@ -1,44 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
-  <ul id="todo-list">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Filter Product</title>
+  </head>
+  <body>
+    <Label>Name Product: </Label>
+    <input type="text" id="name-product" /> <label>Price Product:</label>
+    <input type="number" id="price-product" />
+    <button id="submit-product">Add</button> <label>Xem nhiều:</label>
+    <select id="select-product">
+      <option>Low to Hight</option>
+      <option>Hight to Low</option>
+    </select>
 
-  </ul>
-  
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script>
-    
-    var todoList=document.getElementById('todo-list');
-    function getData(){
-      axios.get("http://localhost:9081/todolist").then(
-      function(res){
-        var result=res.data;
-        render(result);
+    <table id="table-product"></table>
+
+    <script>
+      var products = [
+        { name: "IPhone XS Max 64GB", price: 28600000 },
+        { name: "Xiaomi Mi 8 Lite 64BG", price: 5690000 },
+        { name: "Samsung Galaxy Note 9", price: 22990000 },
+        { name: "Asus ROG Phone 128GB", price: 19990000 },
+        { name: "Huawei Y9 2019", price: 5490000 },
+        { name: "Vsmart Active 1 Plus", price: 6290000 },
+        { name: "Huawei Mate 20", price: 15990000 },
+        { name: "Nokia 6.1 Plus", price: 5290000 }
+      ];
+      var selectProduct = document.getElementById("select-product");
+      var tableProduct = document.getElementById("table-product");
+      var submitProduct = document.getElementById("submit-product");
+      selectProduct.addEventListener("change", filterProducts);
+      submitProduct.addEventListener("click", addProduct);
+      tableProduct.addEventListener("click", clickDelete);
+      function addProduct() {
+        var nameProduct = document.getElementById("name-product").value;
+        var priceProduct = document.getElementById("price-product").value;
+
+        if (nameProduct != "" && priceProduct != "") {
+          var product = {
+            name: nameProduct,
+            price: parseInt(priceProduct)
+          };
+          products.push(product);
+          clearText();
+          render(products);
+        }
       }
-    )
-    };
-    function render(items){
-      var result=items.map(function(item){
-        return "<li>"+item.content+"</li>";
-      });
-      todoList.innerHTML=result.join('');
-    }
-    function deleteData(){
-      axios.delete("http://localhost:9081/todolist/5");
-    }
-    function updateData(){
-      axios.put("http://localhost:9081/todolist/1",{
-        "connt":"helloworld",
-      })
-    }
-    updateData();
-    getData();
-  </script>
-</body>
+      function clickDelete(event) {
+        console.log(event.target);
+        id = parseInt(event.target.dataset.id);
+        if(id>=0) {products.splice(id, 1);}
+        render(products);
+      }
+      addProduct();
+
+      function clearText() {
+        document.getElementById("name-product").value = "";
+        document.getElementById("price-product").value = "";
+      }
+
+      function filterProducts() {
+        var choose = selectProduct.value;
+
+        switch (choose) {
+          case "Low to Hight":
+            var sort = products.sort(function(a, b) {
+              return b.price - a.price;
+            });
+            break;
+
+          case "Hight to Low":
+            var sort = products.sort(function(a, b) {
+              return a.price - b.price;
+            });
+            break;
+
+          default:
+            break;
+        }
+        render(sort);
+      }
+      filterProducts();
+
+      function render(products) {
+        var content = products.map(function(product, index) {
+          return (
+            "<tr><td>" +product.name +"</td><td><button data-id='"+index+"'>Delete</button></td></tr>"
+            
+            // "</td><td>" +
+            // product.price +
+
+          );
+        });
+        tableProduct.innerHTML = content.join("");
+      }
+      render(products);
+      console.log(products);
+    </script>
+  </body>
 </html>

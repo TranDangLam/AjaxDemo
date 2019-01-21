@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <ul id="todo-list">
+
+  </ul>
+  
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    
+    var todoList=document.getElementById('todo-list');
+    function getData(){
+      axios.get("http://localhost:9081/todolist").then(
+      function(res){
+        var result=res.data;
+        render(result);
+      }
+    )
+    };
+    function render(items){
+      var result=items.map(function(item){
+        return "<li>"+item.content+"</li>";
+      });
+      todoList.innerHTML=result.join('');
+    }
+    function deleteData(){
+      axios.delete("http://localhost:9081/todolist/5");
+    }
+    function updateData(){
+      axios.put("http://localhost:9081/todolist/1",{
+        "connt":"helloworld",
+      })
+    }
+    updateData();
+    getData();
+  </script>
+</body>
+</html>
